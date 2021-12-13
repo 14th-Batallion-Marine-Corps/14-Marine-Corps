@@ -87,7 +87,7 @@ namespace Content.Client.Administration.UI.SetOutfit
 
         private static ItemList.Item GetItem(StartingGearPrototype gear, ItemList itemList)
         {
-            return new(itemList)
+            return new()
             {
                 Metadata = gear,
                 Text = gear.ID

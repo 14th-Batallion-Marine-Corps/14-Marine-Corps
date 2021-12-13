@@ -65,7 +65,7 @@ namespace Content.Client.Administration.UI.CustomControls
                     continue;
                 }
 
-                PlayerItemList.Add(new ItemList.Item(PlayerItemList)
+                PlayerItemList.Add(new ItemList.Item()
                 {
                     Metadata = info,
                     Text = displayName

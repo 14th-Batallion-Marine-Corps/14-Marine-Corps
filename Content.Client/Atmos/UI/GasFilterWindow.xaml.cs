@@ -83,7 +83,7 @@ namespace Content.Client.Atmos.UI
 
         private static ItemList.Item GetGasItem(string id, string name, ItemList itemList)
         {
-            return new(itemList)
+            return new()
             {
                 Metadata = id,
                 Text = name

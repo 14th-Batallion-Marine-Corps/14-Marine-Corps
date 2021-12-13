@@ -23,7 +23,7 @@ namespace Content.Client.MachineLinking.UI
             ButtonContainer.Clear();
             foreach (var port in state.Ports)
             {
-                var portBtn = new ItemList.Item(ButtonContainer)
+                var portBtn = new ItemList.Item()
                 {
                     Text = port.Key,
                     Disabled = !port.Value

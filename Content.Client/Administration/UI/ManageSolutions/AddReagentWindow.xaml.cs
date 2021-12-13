@@ -122,7 +122,7 @@ namespace Content.Client.Administration.UI.ManageSolutions
                     continue;
                 }
 
-                ItemList.Item regentItem = new(ReagentList)
+                ItemList.Item regentItem = new()
                 {
                     Metadata = reagent,
                     Text = reagent.ID

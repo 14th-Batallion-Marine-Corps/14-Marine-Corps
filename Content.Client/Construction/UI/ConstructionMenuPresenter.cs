@@ -247,7 +247,7 @@ namespace Content.Client.Construction.UI
 
         private static ItemList.Item GetItem(ConstructionPrototype recipe, ItemList itemList)
         {
-            return new(itemList)
+            return new()
             {
                 Metadata = recipe,
                 Text = recipe.Name,
