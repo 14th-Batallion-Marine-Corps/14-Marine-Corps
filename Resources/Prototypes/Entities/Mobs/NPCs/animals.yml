@@ -114,6 +114,7 @@
   - type: UtilityAI
     behaviorSets:
     - UnarmedAttackHostiles
+    - Idle
   - type: AiFactionTag
     factions:
     - SimpleHostile
@@ -705,6 +706,7 @@
     # mice are gender neutral who cares
     maleScream: /Audio/Animals/mouse_squeak.ogg
     femaleScream: /Audio/Animals/mouse_squeak.ogg
+    wilhelmProbability: 0.001
   # TODO: Remove CombatMode when Prototype Composition is added
   - type: CombatMode
     combatToggleAction:
@@ -1105,6 +1107,7 @@
   name: tarantula
   parent: MobGiantSpider
   id: MobGiantSpiderAngry
+  suffix: Angry
   components:
     - type: AiFactionTag
       factions:
