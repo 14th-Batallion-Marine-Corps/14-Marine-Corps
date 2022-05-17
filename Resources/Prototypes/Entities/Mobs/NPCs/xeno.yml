@@ -34,12 +34,9 @@
         radius: 0.35
       mass: 120
       mask:
-      - Impassable
-      - MobImpassable
-      - VaultImpassable
-      - SmallImpassable
+      - MobMask
       layer:
-      - Opaque
+      - MobLayer
   - type: MobState
     thresholds:
       0: !type:NormalMobState {}
@@ -82,6 +79,8 @@
     rules: You are an antagonist, smack, slash, and wack!
   - type: ReplacementAccent
     accent: xeno
+  - type: TypingIndicator
+    proto: alien
   - type: Temperature
     heatDamageThreshold: 360
     coldDamageThreshold: -150

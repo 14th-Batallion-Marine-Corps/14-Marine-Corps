@@ -4,6 +4,11 @@
   description: "An unpowered light."
   suffix: Unpowered
   components:
+  - type: MeleeSound
+    soundGroups:
+      Brute:
+        path:
+          "/Audio/Effects/glass_hit.ogg"
   - type: Transform
     anchored: true
   - type: Clickable
@@ -11,14 +16,6 @@
   - type: Construction
     graph: LightFixture
     node: tubeLight
-  - type: Physics
-    canCollide: false
-  - type: Fixtures
-    fixtures:
-    - shape:
-        !type:PhysShapeAabb
-          bounds: "-0.15,-0.45,0.35,0.45"
-      layer: [ Passable ]
   - type: Sprite
     sprite: Structures/Wallmounts/Lighting/light_tube.rsi
     drawdepth: WallMountedItems
@@ -114,7 +111,7 @@
     damage:
       types:
         Heat: 5
-     
+
 - type: entity
   parent: WallLight
   id: UnpoweredLightLED
@@ -137,7 +134,7 @@
     damage:
       types:
         Heat: 5
-        
+
 - type: entity
   parent: WallLight
   id: UnpoweredLightExterior
@@ -161,7 +158,7 @@
     damage:
       types:
         Heat: 5
-        
+
 - type: entity
   parent: WallLight
   id: UnpoweredLightSodium
@@ -232,13 +229,6 @@
   - type: PointLight
     enabled: false
     offset: "0, -0.5"
-  - type: Physics
-  - type: Fixtures
-    fixtures:
-    - shape:
-        !type:PhysShapeAabb
-          bounds: "0,0,0.1,0.25"
-      layer: [ Passable ]
   - type: PoweredLight
     bulb: Bulb
     damage:
