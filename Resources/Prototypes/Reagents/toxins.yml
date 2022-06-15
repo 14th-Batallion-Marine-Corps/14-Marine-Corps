@@ -254,6 +254,13 @@
         damage:
           types:
             Poison: 4
+      - !type:ChemVomit
+        probability: 0.025
+        conditions:
+          - !type:ReagentThreshold
+            min: 3
+          - !type:OrganType
+            type: Animal
 
 - type: reagent
   id: Amatoxin
@@ -302,4 +309,4 @@
               Cellular: 1
         - !type:ChemCauseDisease
           causeChance: 1
-          disease: ZombieInfection
+          disease: ActiveZombieVirus

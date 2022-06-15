@@ -31,7 +31,7 @@
     fixtures:
     - shape:
         !type:PhysShapeCircle
-        radius: 0.35
+        radius: 0.25
       mass: 120
       mask:
       - MobMask
@@ -52,7 +52,7 @@
       types:
         Bloodloss:
           -0.25
-  - type: UnarmedCombat
+  - type: MeleeWeapon
     range: 1.5
     arcwidth: 0
     arc: claw
@@ -88,6 +88,8 @@
   - type: Tag
     tags:
       - CannotSuicide
+      - DoorBumpOpener
+      - FootstepSound
   - type: NoSlip
 
 - type: entity
@@ -119,7 +121,7 @@
   - type: AiFactionTag
     factions:
     - Xeno
-  - type: UnarmedCombat
+  - type: MeleeWeapon
     range: 1.5
     arcwidth: 0
     arc: bite
