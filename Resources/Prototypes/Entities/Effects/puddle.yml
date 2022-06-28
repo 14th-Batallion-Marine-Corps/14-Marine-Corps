@@ -12,7 +12,7 @@
     spillSound:
       path: /Audio/Effects/Fluids/splat.ogg
     recolor: true
-  - type: Clickable  
+  - type: Clickable
   - type: Evaporation
   - type: Physics
   - type: Fixtures
@@ -57,6 +57,7 @@
     - type: PuddleVisualizer
   - type: Slippery
     launchForwardsMultiplier: 2.0
+  - type: StepTrigger
 
 - type: entity
   name: puddle
@@ -69,13 +70,15 @@
     state: smear-0
     netsync: false
   - type: Puddle
+    slipThreshold: 5
   - type: Appearance
     visuals:
     - type: PuddleVisualizer
       recolor: true
   - type: Slippery
     launchForwardsMultiplier: 2.0
-    
+  - type: StepTrigger
+
 - type: entity
   name: puddle
   id: PuddleSplatter
@@ -87,12 +90,14 @@
     state: splatter-0
     netsync: false
   - type: Puddle
+    slipThreshold: 5
   - type: Appearance
     visuals:
     - type: PuddleVisualizer
   - type: Slippery
     launchForwardsMultiplier: 2.0
-    
+  - type: StepTrigger
+
 - type: entity
   id: PuddleBlood
   name: blood
@@ -115,15 +120,30 @@
 
 - type: entity
   name: vomit
-  id: PuddleVomit
-  parent: PuddleBase
+  id: PuddleVomit # No parent because we don't want the visualizer
   description: Gross.
   components:
+  - type: Transform
+    anchored: true
+  - type: Clickable
+  - type: Evaporation
+  - type: Physics
+  - type: Fixtures
+    fixtures:
+    - shape:
+        !type:PhysShapeAabb
+        bounds: "-0.4,-0.4,0.4,0.4"
+      mask:
+      - ItemMask
+      layer:
+      - SlipLayer
+      hard: false
   - type: Sprite
     sprite: Fluids/vomit.rsi
     state: vomit-0
     netsync: false
   - type: Puddle
+    slipThreshold: 5
   - type: SolutionContainerManager
     solutions:
       puddle:
@@ -132,12 +152,10 @@
           Quantity: 5
         - ReagentId: Water
           Quantity: 5
-  - type: Appearance
-    visuals:
-    - type: PuddleVisualizer
   - type: Slippery
     launchForwardsMultiplier: 2.0
-    
+  - type: StepTrigger
+
 - type: entity
   name: toxins vomit
   id: PuddleVomitToxin
@@ -162,7 +180,8 @@
     - type: PuddleVisualizer
   - type: Slippery
     launchForwardsMultiplier: 2.0
-    
+  - type: StepTrigger
+
 - type: entity
   name: writing
   id: PuddleWriting
@@ -180,4 +199,4 @@
     - type: PuddleVisualizer
   - type: Slippery
     launchForwardsMultiplier: 2.0
-    
+  - type: StepTrigger
