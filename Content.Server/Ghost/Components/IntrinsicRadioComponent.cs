@@ -12,25 +12,14 @@ namespace Content.Server.Ghost.Components
     /// </summary>
     [RegisterComponent]
     [ComponentReference(typeof(IRadio))]
-    public sealed class GhostRadioComponent : Component, IRadio
+    public sealed class IntrinsicRadioComponent : Component, IRadio
     {
         // TODO: This class is yuck
         [Dependency] private readonly IServerNetManager _netManager = default!;
         [Dependency] private readonly IEntityManager _entMan = default!;
 
-        [DataField("channels", customTypeSerializer: typeof(PrototypeIdHashSetSerializer<RadioChannelPrototype>))]
-        private HashSet<string> _channels = new()
-        {
-            "Common",
-            "Command",
-            "CentCom",
-            "Engineering",
-            "Medical",
-            "Science",
-            "Security",
-            "Service",
-            "Supply",
-        };
+        [DataField("channels", customTypeSerializer: typeof(PrototypeIdHashSetSerializer<RadioChannelPrototype>), required: true)]
+        private HashSet<string> _channels = new();
 
         public void Receive(string message, RadioChannelPrototype channel, EntityUid speaker)
         {
@@ -44,7 +33,7 @@ namespace Content.Server.Ghost.Components
                 Channel = ChatChannel.Radio,
                 Message = message,
                 //Square brackets are added here to avoid issues with escaping
-                MessageWrap = Loc.GetString("chat-radio-message-wrap", ("color", channel.Color), ("channel", $"\\[{channel.Name}\\]"), ("name", _entMan.GetComponent<MetaDataComponent>(speaker).EntityName))
+                MessageWrap = Loc.GetString("chat-radio-message-wrap", ("color", channel.Color), ("channel", $"\\[{channel.LocalizedName}\\]"), ("name", _entMan.GetComponent<MetaDataComponent>(speaker).EntityName))
             };
 
             _netManager.ServerSendMessage(msg, playerChannel);
