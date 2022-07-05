@@ -1,0 +1,24 @@
+- type: entity
+  id: BarbedWire
+  name: barbed wire
+  parent: MaterialBase
+  suffix: Full
+  description: A spiky length of wire.
+  components:
+  - type: Stack
+    stackType: MaterialBarbedWire
+  - type: Sprite
+    netsync: false
+    sprite: Objects/Materials/materials_mc.rsi
+    state: barbed_wire
+  - type: Item
+    sprite: Objects/Materials/materials_mc.rsi
+
+- type: entity
+  parent: BarbedWire
+  id: BarbedWire1
+  name: barbed wire
+  suffix: Single
+  components:
+    - type: Stack
+      count: 1

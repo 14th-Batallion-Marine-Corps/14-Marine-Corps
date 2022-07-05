@@ -1,0 +1,4 @@
+﻿- type: stack
+  id: MaterialBarbedWire
+  name: barbed wire
+  spawn: BarbedWire1
