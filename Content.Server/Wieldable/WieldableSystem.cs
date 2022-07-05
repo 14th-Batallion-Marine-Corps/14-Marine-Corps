@@ -13,6 +13,7 @@ using Content.Shared.Verbs;
 using Robust.Shared.Audio;
 using Robust.Shared.Player;
 using Content.Server.Actions.Events;
+using Content.Server.Weapon.Ranged.Systems;
 
 
 namespace Content.Server.Wieldable
@@ -36,6 +37,7 @@ namespace Content.Server.Wieldable
             SubscribeLocalEvent<WieldableComponent, DisarmAttemptEvent>(OnDisarmAttemptEvent);
 
             SubscribeLocalEvent<IncreaseDamageOnWieldComponent, MeleeHitEvent>(OnMeleeHit);
+            SubscribeLocalEvent<ChangeGunStatsOnWieldComponent, GunStatsModifierEvent>(OnGunShoot);
         }
 
         private void OnDisarmAttemptEvent(EntityUid uid, WieldableComponent component, DisarmAttemptEvent args)
@@ -242,7 +244,20 @@ namespace Content.Server.Wieldable
 
             args.ModifiersList.Add(component.Modifiers);
         }
+        private void OnGunShoot(EntityUid uid, ChangeGunStatsOnWieldComponent component, ref GunStatsModifierEvent args)
+        {
+            if (EntityManager.TryGetComponent<WieldableComponent>(uid, out var wield))
+            {
+                if (!wield.Wielded)
+                    return;
+            }
+            args.AngleDecay += component.AngleDecay;
+            args.AngleIncrease += component.AngleIncrease;
+            args.MaxAngle += component.MaxAngle;
+            args.MinAngle += component.MinAngle;
+        }
     }
+
 
     #region Events
 

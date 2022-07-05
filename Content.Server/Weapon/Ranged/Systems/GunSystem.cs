@@ -29,11 +29,13 @@ public sealed partial class GunSystem : SharedGunSystem
 
     public override void Shoot(GunComponent gun, List<IShootable> ammo, EntityCoordinates fromCoordinates, EntityCoordinates toCoordinates, EntityUid? user = null)
     {
+        var shootmodifier = new GunStatsModifierEvent(Angle.Zero, Angle.Zero, Angle.Zero, Angle.Zero);
+        RaiseLocalEvent(gun.Owner, ref shootmodifier);
         var fromMap = fromCoordinates.ToMap(EntityManager);
         var toMap = toCoordinates.ToMapPos(EntityManager);
         var mapDirection = toMap - fromMap.Position;
         var mapAngle = mapDirection.ToAngle();
-        var angle = GetRecoilAngle(Timing.CurTime, gun, mapDirection.ToAngle());
+        var angle = GetRecoilAngle(Timing.CurTime, gun, mapDirection.ToAngle(), shootmodifier);
 
         // Update shot based on the recoil
         toMap = fromMap.Position + angle.ToVec() * mapDirection.Length;
@@ -188,20 +190,22 @@ public sealed partial class GunSystem : SharedGunSystem
         return angles;
     }
 
-    private Angle GetRecoilAngle(TimeSpan curTime, GunComponent component, Angle direction)
+    private Angle GetRecoilAngle(TimeSpan curTime, GunComponent component, Angle direction, GunStatsModifierEvent modifier)
     {
         var timeSinceLastFire = (curTime - component.LastFire).TotalSeconds;
-        var newTheta = MathHelper.Clamp(component.CurrentAngle.Theta + component.AngleIncrease.Theta - component.AngleDecay.Theta * timeSinceLastFire, component.MinAngle.Theta, component.MaxAngle.Theta);
+        var newTheta = MathHelper.Clamp(component.CurrentAngle.Theta + (component.AngleIncrease.Theta + modifier.AngleIncrease.Theta) - (component.AngleDecay.Theta + modifier.AngleDecay.Theta) * timeSinceLastFire, component.MinAngle.Theta + modifier.MinAngle.Theta, component.MaxAngle.Theta + modifier.MaxAngle.Theta);
         component.CurrentAngle = new Angle(newTheta);
         component.LastFire = component.NextFire;
+
 
         // Convert it so angle can go either side.
         var random = Random.NextFloat(-0.5f, 0.5f);
         var spread = component.CurrentAngle.Theta * random;
         var angle = new Angle(direction.Theta + component.CurrentAngle.Theta * random);
-        DebugTools.Assert(spread <= component.MaxAngle.Theta);
+        DebugTools.Assert(spread <= component.MaxAngle.Theta + modifier.MaxAngle.Theta);
         return angle;
     }
+
 
     protected override void PlaySound(EntityUid gun, string? sound, EntityUid? user = null)
     {
@@ -299,3 +303,21 @@ public sealed partial class GunSystem : SharedGunSystem
 
     #endregion
 }
+[ByRefEvent]
+public struct GunStatsModifierEvent
+    {
+        public Angle MinAngle = Angle.Zero;
+        public Angle MaxAngle = Angle.Zero;
+
+        public Angle AngleIncrease = Angle.Zero;
+
+        public Angle AngleDecay = Angle.Zero;
+
+        public GunStatsModifierEvent(Angle minAngle, Angle maxAngle, Angle angleIncrease, Angle angleDecay){
+            MinAngle = minAngle;
+            MaxAngle = maxAngle;
+            AngleIncrease = angleIncrease;
+            AngleDecay = angleDecay;
+        }
+
+    }
