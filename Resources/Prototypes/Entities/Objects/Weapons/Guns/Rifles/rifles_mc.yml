@@ -1,0 +1,68 @@
+- type: entity
+  name: T-12 Assault Rifle
+  parent: BaseWeaponRifle
+  id: WeaponRifleT12
+  description: the standard tgmc rifle
+  components:
+  - type: Sprite
+    sprite: Objects/Weapons/Guns/Rifles/t12_64_mc.rsi
+    layers:
+      - state: base
+        map: ["enum.GunVisualLayers.Base"]
+      - state: mag-0
+        map: ["enum.GunVisualLayers.Mag"]
+  - type: Item
+    sprite: Objects/Weapons/Guns/Rifles/t12_mc.rsi
+  - type: Gun
+    fireRate: 5
+    maxAngle: 60
+    minAngle: 4
+    angleIncrease: 4
+    angleDecay: 1
+    selectedMode: SemiAuto
+    availableModes:
+      - FullAuto
+      - SemiAuto
+      - Burst
+    soundGunshot:
+      path: /Audio/Weapons/Guns/Gunshots/autorifle-1_mc.ogg
+    soundEmpty:
+      path: /Audio/Weapons/Guns/Empty/m41a_empty_mc.ogg
+  - type: ChamberMagazineAmmoProvider
+  - type: ItemSlots
+    slots:
+      gun_magazine:
+        name: Magazine
+        startingItem: MagazineT-12
+        insertSound: /Audio/Weapons/Guns/MagIn/t18_magin_mc.ogg
+        ejectSound: /Audio/Weapons/Guns/MagOut/t18_magout_mc.ogg
+        priority: 2
+        whitelist:
+          tags:
+            - MagazineT-12
+      gun_chamber:
+        name: Chamber
+        startingItem: Cartridge10X24Caseless
+        priority: 1
+        whitelist:
+          tags:
+            - Cartridge10X24Caseless
+  - type: ContainerContainer
+    containers:
+      gun_magazine: !type:ContainerSlot
+      gun_chamber: !type:ContainerSlot
+  - type: Wieldable
+    wieldTime: 0.7
+  - type: ChangeGunStatsOnWield
+    angleIncrease: -1.5
+    maxAngle: -50
+    angleDecay: 2
+    minAngle: 0
+  - type: MovementSpeedModifierOnWield
+    sprintModifier: 0.90
+    walkModifier: 0.95
+  - type: MagazineVisuals
+    magState: mag
+    steps: 1
+    zeroVisible: true
+  - type: Appearance

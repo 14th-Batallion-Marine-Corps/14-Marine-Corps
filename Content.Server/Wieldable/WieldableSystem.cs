@@ -4,6 +4,7 @@ using Content.Server.Hands.Systems;
 using Content.Server.Weapon.Melee;
 using Content.Server.Wieldable.Components;
 using Content.Shared.Hands;
+
 using Content.Shared.Hands.Components;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Interaction.Events;
@@ -14,7 +15,8 @@ using Robust.Shared.Audio;
 using Robust.Shared.Player;
 using Content.Server.Actions.Events;
 using Content.Server.Weapon.Ranged.Systems;
-
+using Content.Shared.Movement.Components;
+using Content.Shared.Movement.Systems;
 
 namespace Content.Server.Wieldable
 {
@@ -24,6 +26,7 @@ namespace Content.Server.Wieldable
         [Dependency] private readonly HandVirtualItemSystem _virtualItemSystem = default!;
         [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
+        [Dependency] private readonly MovementSpeedModifierSystem _movementSpeed = default!;
         public override void Initialize()
         {
             base.Initialize();
@@ -38,6 +41,8 @@ namespace Content.Server.Wieldable
 
             SubscribeLocalEvent<IncreaseDamageOnWieldComponent, MeleeHitEvent>(OnMeleeHit);
             SubscribeLocalEvent<ChangeGunStatsOnWieldComponent, GunStatsModifierEvent>(OnGunShoot);
+            SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, ItemWieldedEvent>(MovementSpeedOnWieldUnwield);
+            SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeedModifier);
         }
 
         private void OnDisarmAttemptEvent(EntityUid uid, WieldableComponent component, DisarmAttemptEvent args)
@@ -256,6 +261,20 @@ namespace Content.Server.Wieldable
             args.MaxAngle += component.MaxAngle;
             args.MinAngle += component.MinAngle;
         }
+        private void MovementSpeedOnWieldUnwield(EntityUid uid, MovementSpeedModifierOnWieldComponent component, ItemWieldedEvent args)
+        {
+            _movementSpeed.RefreshMovementSpeedModifiers(uid);
+        }
+        private void OnRefreshMovementSpeedModifier(EntityUid uid, MovementSpeedModifierOnWieldComponent component, RefreshMovementSpeedModifiersEvent args)
+        {
+            if (EntityManager.TryGetComponent<WieldableComponent>(uid, out var wield))
+            {
+                if (!wield.Wielded)
+                    return;
+            }
+            args.ModifySpeed(component.WalkModifier, component.SprintModifier);
+        }
+
     }
 
 
