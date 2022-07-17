@@ -25,6 +25,7 @@ public abstract partial class SharedHandsSystem : EntitySystem
             .Bind(ContentKeyFunctions.AltUseItemInHand, InputCmdHandler.FromDelegate(HandleAltUseInHand, handle: false))
             .Bind(ContentKeyFunctions.SwapHands, InputCmdHandler.FromDelegate(SwapHandsPressed, handle: false))
             .Bind(ContentKeyFunctions.Drop, new PointerInputCmdHandler(DropPressed))
+            .Bind(ContentKeyFunctions.UniqueAction, InputCmdHandler.FromDelegate(HandleUniqueActionItem, handle: false))
             .Register<SharedHandsSystem>();
     }
 
@@ -39,6 +40,12 @@ public abstract partial class SharedHandsSystem : EntitySystem
     {
         if (session?.AttachedEntity != null)
             TryUseItemInHand(session.AttachedEntity.Value);
+    }
+
+    private void HandleUniqueActionItem(ICommonSession? session)
+    {
+        if (session?.AttachedEntity != null)
+            TryUniqueActionItemInHand(session.AttachedEntity.Value);
     }
 
     private void HandleMoveItemFromHand(RequestMoveHandItemEvent msg, EntitySessionEventArgs args)
@@ -130,6 +137,16 @@ public abstract partial class SharedHandsSystem : EntitySystem
             return _interactionSystem.AltInteract(uid, handsComp.ActiveHandEntity.Value);
         else
             return _interactionSystem.UseInHandInteraction(uid, handsComp.ActiveHandEntity.Value);
+    }
+
+    public bool TryUniqueActionItemInHand(EntityUid uid, SharedHandsComponent? handsComp = null)
+    {
+        if (!Resolve(uid, ref handsComp, false))
+            return false;
+        if (handsComp.ActiveHandEntity == null)
+            return false;
+
+        return _interactionSystem.UniqueActionInHandInteraction(uid, handsComp.ActiveHandEntity.Value);
     }
 
     /// <summary>
