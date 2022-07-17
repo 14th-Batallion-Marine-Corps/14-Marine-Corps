@@ -280,7 +280,6 @@ namespace Content.Server.Wieldable
     }
 //14MC Edit - end
 
-
     #region Events
 
     public sealed class BeforeWieldEvent : CancellableEntityEventArgs
