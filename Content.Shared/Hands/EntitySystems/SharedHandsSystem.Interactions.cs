@@ -25,7 +25,7 @@ public abstract partial class SharedHandsSystem : EntitySystem
             .Bind(ContentKeyFunctions.AltUseItemInHand, InputCmdHandler.FromDelegate(HandleAltUseInHand, handle: false))
             .Bind(ContentKeyFunctions.SwapHands, InputCmdHandler.FromDelegate(SwapHandsPressed, handle: false))
             .Bind(ContentKeyFunctions.Drop, new PointerInputCmdHandler(DropPressed))
-            .Bind(ContentKeyFunctions.UniqueAction, InputCmdHandler.FromDelegate(HandleUniqueActionItem, handle: false))
+            .Bind(ContentKeyFunctions.UniqueAction, InputCmdHandler.FromDelegate(HandleUniqueActionItem, handle: false)) //14MC Edit
             .Register<SharedHandsSystem>();
     }
 
@@ -40,12 +40,6 @@ public abstract partial class SharedHandsSystem : EntitySystem
     {
         if (session?.AttachedEntity != null)
             TryUseItemInHand(session.AttachedEntity.Value);
-    }
-
-    private void HandleUniqueActionItem(ICommonSession? session)
-    {
-        if (session?.AttachedEntity != null)
-            TryUniqueActionItemInHand(session.AttachedEntity.Value);
     }
 
     private void HandleMoveItemFromHand(RequestMoveHandItemEvent msg, EntitySessionEventArgs args)
@@ -139,16 +133,6 @@ public abstract partial class SharedHandsSystem : EntitySystem
             return _interactionSystem.UseInHandInteraction(uid, handsComp.ActiveHandEntity.Value);
     }
 
-    public bool TryUniqueActionItemInHand(EntityUid uid, SharedHandsComponent? handsComp = null)
-    {
-        if (!Resolve(uid, ref handsComp, false))
-            return false;
-        if (handsComp.ActiveHandEntity == null)
-            return false;
-
-        return _interactionSystem.UniqueActionInHandInteraction(uid, handsComp.ActiveHandEntity.Value);
-    }
-
     /// <summary>
     ///     Moves an entity from one hand to the active hand.
     /// </summary>
@@ -188,3 +172,21 @@ public abstract partial class SharedHandsSystem : EntitySystem
         }
     }
 }
+
+//14MC Edit - start
+    private void HandleUniqueActionItem(ICommonSession? session)
+    {
+        if (session?.AttachedEntity != null)
+            TryUniqueActionItemInHand(session.AttachedEntity.Value);
+    }
+    public bool TryUniqueActionItemInHand(EntityUid uid, SharedHandsComponent? handsComp = null)
+    {
+        if (!Resolve(uid, ref handsComp, false))
+            return false;
+        if (handsComp.ActiveHandEntity == null)
+            return false;
+
+        return _interactionSystem.UniqueActionInHandInteraction(uid, handsComp.ActiveHandEntity.Value);
+    }
+
+//14MC Edit - end

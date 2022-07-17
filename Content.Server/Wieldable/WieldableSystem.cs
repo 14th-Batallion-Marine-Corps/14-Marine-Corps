@@ -4,7 +4,6 @@ using Content.Server.Hands.Systems;
 using Content.Server.Weapon.Melee;
 using Content.Server.Wieldable.Components;
 using Content.Shared.Hands;
-
 using Content.Shared.Hands.Components;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Interaction.Events;
@@ -26,7 +25,7 @@ namespace Content.Server.Wieldable
         [Dependency] private readonly HandVirtualItemSystem _virtualItemSystem = default!;
         [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
-        [Dependency] private readonly MovementSpeedModifierSystem _movementSpeed = default!;
+        [Dependency] private readonly MovementSpeedModifierSystem _movementSpeed = default!; //14MC Edit
         public override void Initialize()
         {
             base.Initialize();
@@ -40,9 +39,11 @@ namespace Content.Server.Wieldable
             SubscribeLocalEvent<WieldableComponent, DisarmAttemptEvent>(OnDisarmAttemptEvent);
 
             SubscribeLocalEvent<IncreaseDamageOnWieldComponent, MeleeHitEvent>(OnMeleeHit);
+            //14MC edit start
             SubscribeLocalEvent<ChangeGunStatsOnWieldComponent, GunStatsModifierEvent>(OnGunShoot);
             SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, ItemWieldedEvent>(MovementSpeedOnWieldUnwield);
             SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeedModifier);
+            //14MC edit end
         }
 
         private void OnDisarmAttemptEvent(EntityUid uid, WieldableComponent component, DisarmAttemptEvent args)
@@ -249,6 +250,7 @@ namespace Content.Server.Wieldable
 
             args.ModifiersList.Add(component.Modifiers);
         }
+//14MC Edit - start
         private void OnGunShoot(EntityUid uid, ChangeGunStatsOnWieldComponent component, ref GunStatsModifierEvent args)
         {
             if (EntityManager.TryGetComponent<WieldableComponent>(uid, out var wield))
@@ -276,6 +278,7 @@ namespace Content.Server.Wieldable
         }
 
     }
+//14MC Edit - end
 
 
     #region Events

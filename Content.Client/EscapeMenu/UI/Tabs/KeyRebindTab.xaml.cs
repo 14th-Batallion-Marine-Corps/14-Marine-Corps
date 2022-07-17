@@ -111,7 +111,7 @@ namespace Content.Client.EscapeMenu.UI.Tabs
             AddButton(ContentKeyFunctions.AltUseItemInHand);
             AddButton(ContentKeyFunctions.ActivateItemInWorld);
             AddButton(ContentKeyFunctions.AltActivateItemInWorld);
-            AddButton(ContentKeyFunctions.UniqueAction);
+            AddButton(ContentKeyFunctions.UniqueAction); //14MC edit
             AddButton(ContentKeyFunctions.Drop);
             AddButton(ContentKeyFunctions.ExamineEntity);
             AddButton(ContentKeyFunctions.SwapHands);

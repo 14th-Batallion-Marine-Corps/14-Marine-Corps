@@ -25,10 +25,10 @@ public abstract partial class SharedGunSystem
         SubscribeLocalEvent<BallisticAmmoProviderComponent, ExaminedEvent>(OnBallisticExamine);
         SubscribeLocalEvent<BallisticAmmoProviderComponent, GetVerbsEvent<Verb>>(OnBallisticVerb);
         SubscribeLocalEvent<BallisticAmmoProviderComponent, InteractUsingEvent>(OnBallisticInteractUsing);
-        SubscribeLocalEvent<BallisticAmmoProviderComponent, UniqueActionInHandEvent>(OnBallisticActivate);
+        SubscribeLocalEvent<BallisticAmmoProviderComponent, UniqueActionInHandEvent>(OnBallisticActivate); //14MC - UniqueActionInHandEvent
     }
 
-    private void OnBallisticActivate(EntityUid uid, BallisticAmmoProviderComponent component, UniqueActionInHandEvent args)
+    private void OnBallisticActivate(EntityUid uid, BallisticAmmoProviderComponent component, UniqueActionInHandEvent args) //14MC Edit - UniqueActionInHandEvent args
     {
         ManualCycle(component, Transform(uid).MapPosition, args.User);
         args.Handled = true;

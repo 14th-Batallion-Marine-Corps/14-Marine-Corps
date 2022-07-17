@@ -9,7 +9,7 @@ namespace Content.Shared.Input
         public static readonly BoundKeyFunction AltUseItemInHand = "AltActivateItemInHand";
         public static readonly BoundKeyFunction ActivateItemInWorld = "ActivateItemInWorld";
         public static readonly BoundKeyFunction AltActivateItemInWorld = "AltActivateItemInWorld";
-        public static readonly BoundKeyFunction UniqueAction = "UniqueAction";
+        public static readonly BoundKeyFunction UniqueAction = "UniqueAction"; //14MC Edit
         public static readonly BoundKeyFunction Drop = "Drop";
         public static readonly BoundKeyFunction ExamineEntity = "ExamineEntity";
         public static readonly BoundKeyFunction FocusChat = "FocusChatInputWindow";

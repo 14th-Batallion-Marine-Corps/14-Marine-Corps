@@ -767,6 +767,7 @@ namespace Content.Shared.Interaction
         }
         #endregion
 
+        #region UniqueAction
         public bool UniqueActionInHandInteraction(
             EntityUid user,
             EntityUid used,
@@ -795,9 +796,8 @@ namespace Content.Shared.Interaction
                 return true;
             }
             return false;
-            // else, default to activating the item
-            //return InteractionActivate(user, used, false, false, false);
         }
+        #endregion
 
         #region Throw
         /// <summary>
