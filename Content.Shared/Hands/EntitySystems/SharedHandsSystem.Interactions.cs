@@ -171,9 +171,7 @@ public abstract partial class SharedHandsSystem : EntitySystem
             args.PushText(Loc.GetString("comp-hands-examine", ("user", Identity.Entity(handsComp.Owner, EntityManager)), ("item", inhand)));
         }
     }
-}
-
-//14MC Edit - start
+    //14MC Edit - start
     private void HandleUniqueActionItem(ICommonSession? session)
     {
         if (session?.AttachedEntity != null)
@@ -190,3 +188,6 @@ public abstract partial class SharedHandsSystem : EntitySystem
     }
 
 //14MC Edit - end
+}
+
+
