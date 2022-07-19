@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "license": "CC-BY-NC 4.0",
+  "copyright": "https://github.com/tgstation/TerraGov-Marine-Corps/blob/4d54fb4ded6c969fafe269a3e6da648a04573869/icons/obj/items/ammo.dmi",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "base"
+    },
+    {
+      "name": "mag-0"
+    }
+  ]
+}
