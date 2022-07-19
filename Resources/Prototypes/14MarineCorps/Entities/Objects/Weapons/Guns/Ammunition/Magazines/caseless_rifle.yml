@@ -20,7 +20,7 @@
       ballistic-ammo: !type:Container
   - type: Sprite
     netsync: false
-    sprite: 14MarineCorps/Objects/Weapons/Guns/Ammunition/Magazine/Rifle/t12.rsi
+    sprite: 14MarineCorps/Objects/Weapons/Guns/Ammunition/Magazine/t12.rsi
     layers:
     - state: base
       map: ["enum.GunVisualLayers.Base"]
