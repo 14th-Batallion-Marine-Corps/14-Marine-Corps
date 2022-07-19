@@ -67,10 +67,3 @@
     steps: 4
     zeroVisible: true
   - type: Appearance
-  - type: Wieldable
-    wieldTime: 5
-  - type: ChangeGunStatsOnWield
-    angleIncrease: -4
-    angleDecay: -16
-    maxAngle: -20
-    minAngle: -4

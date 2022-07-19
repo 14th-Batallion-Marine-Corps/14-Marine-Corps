@@ -186,8 +186,5 @@ public abstract partial class SharedHandsSystem : EntitySystem
 
         return _interactionSystem.UniqueActionInHandInteraction(uid, handsComp.ActiveHandEntity.Value);
     }
-
-//14MC Edit - end
+    //14MC Edit - end
 }
-
-

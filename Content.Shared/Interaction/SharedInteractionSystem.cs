@@ -767,6 +767,7 @@ namespace Content.Shared.Interaction
         }
         #endregion
 
+        //14MC edit Start
         #region UniqueAction
         public bool UniqueActionInHandInteraction(
             EntityUid user,
@@ -797,7 +798,7 @@ namespace Content.Shared.Interaction
             }
             return false;
         }
-        #endregion
+        #endregion //14MC edit end
 
         #region Throw
         /// <summary>
