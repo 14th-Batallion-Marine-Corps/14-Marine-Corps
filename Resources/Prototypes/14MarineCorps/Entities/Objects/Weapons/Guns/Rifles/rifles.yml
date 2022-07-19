@@ -5,14 +5,14 @@
   description: the standard tgmc rifle
   components:
   - type: Sprite
-    sprite: Objects/Weapons/Guns/Rifles/t12_64_mc.rsi
+    sprite: 14MarineCorps/Objects/Weapons/Guns/Rifles/t12_64.rsi
     layers:
       - state: base
         map: ["enum.GunVisualLayers.Base"]
       - state: mag-0
         map: ["enum.GunVisualLayers.Mag"]
   - type: Item
-    sprite: Objects/Weapons/Guns/Rifles/t12_mc.rsi
+    sprite: 14MarineCorps/Objects/Weapons/Guns/Rifles/t12.rsi
   - type: Gun
     fireRate: 5
     maxAngle: 60
@@ -25,17 +25,17 @@
       - SemiAuto
       - Burst
     soundGunshot:
-      path: /Audio/Weapons/Guns/Gunshots/autorifle-1_mc.ogg
+      path: /Audio/14MarineCorps/Weapons/Guns/Gunshots/autorifle-1.ogg
     soundEmpty:
-      path: /Audio/Weapons/Guns/Empty/m41a_empty_mc.ogg
+      path: /Audio/14MarineCorps/Weapons/Guns/Empty/m41a_empty.ogg
   - type: ChamberMagazineAmmoProvider
   - type: ItemSlots
     slots:
       gun_magazine:
         name: Magazine
         startingItem: MagazineT-12
-        insertSound: /Audio/Weapons/Guns/MagIn/t18_magin_mc.ogg
-        ejectSound: /Audio/Weapons/Guns/MagOut/t18_magout_mc.ogg
+        insertSound: /Audio/14MarineCorps/Weapons/Guns/MagIn/t18_magin.ogg
+        ejectSound: /Audio/14MarineCorps/Weapons/Guns/MagOut/t18_magout.ogg
         priority: 2
         whitelist:
           tags:
