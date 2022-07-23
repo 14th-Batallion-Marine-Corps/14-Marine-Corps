@@ -249,7 +249,7 @@ namespace Content.Server.Wieldable
 
             args.ModifiersList.Add(component.Modifiers);
         }
-//14MC Edit - start
+        //14MC Edit - start
         private void OnGunShoot(EntityUid uid, ChangeGunStatsOnWieldComponent component, ref GunStatsModifierEvent args)
         {
             if (EntityManager.TryGetComponent<WieldableComponent>(uid, out var wield))
@@ -275,9 +275,8 @@ namespace Content.Server.Wieldable
             }
             args.ModifySpeed(component.WalkModifier, component.SprintModifier);
         }
-
+        //14MC Edit - end
     }
-//14MC Edit - end
 
     #region Events
 
