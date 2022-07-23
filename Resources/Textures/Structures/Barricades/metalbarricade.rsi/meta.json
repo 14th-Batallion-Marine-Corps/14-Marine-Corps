@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "license": "CC-BY-NC-4.0",
+  "copyright": "https://github.com/tgstation/TerraGov-Marine-Corps/raw/13cb42f0ce9ecd47d32e7eddf3b66f9fbe026814/icons/Marine/barricades.dmi",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "metal",
+      "directions": 4
+    },
+    {
+      "name": "metal_50",
+      "directions": 4
+    },
+    {
+      "name": "metal_100",
+      "directions": 4
+    },
+    {
+      "name": "metal_150",
+      "directions": 4
+    },
+    {
+      "name": "metal_wire",
+      "directions": 4
+    }
+  ]
+}

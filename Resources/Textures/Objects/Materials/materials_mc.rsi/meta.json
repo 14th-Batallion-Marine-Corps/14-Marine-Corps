@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "license": "CC-BY-NC-4.0",
+    "copyright": "https://github.com/tgstation/TerraGov-Marine-Corps/raw/d2c043df8b2af0a00c78304c9029d4cd85be1dde/icons/Marine/marine-items.dmi",
+    "size": {
+        "x": 32,
+        "y": 32
+    },
+    "states": [
+        {
+            "name": "barbed_wire"
+        }
+    ]
+}
