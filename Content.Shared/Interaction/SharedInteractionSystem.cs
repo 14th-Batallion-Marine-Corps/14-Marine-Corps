@@ -767,6 +767,39 @@ namespace Content.Shared.Interaction
         }
         #endregion
 
+        //14MC edit Start
+        #region UniqueAction
+        public bool UniqueActionInHandInteraction(
+            EntityUid user,
+            EntityUid used,
+            bool checkCanUse = true,
+            bool checkCanInteract = true,
+            bool checkUseDelay = true)
+        {
+            UseDelayComponent? delayComponent = null;
+
+            if (checkUseDelay
+                && TryComp(used, out delayComponent)
+                && delayComponent.ActiveDelay)
+                return true; // if the item is on cooldown, we consider this handled.
+
+            if (checkCanInteract && !_actionBlockerSystem.CanInteract(user, used))
+                return false;
+
+            if (checkCanUse && !_actionBlockerSystem.CanUseHeldEntity(user))
+                return false;
+
+            var useMsg = new UniqueActionInHandEvent(user);
+            RaiseLocalEvent(used, useMsg, true);
+            if (useMsg.Handled)
+            {
+                _useDelay.BeginDelay(used, delayComponent);
+                return true;
+            }
+            return false;
+        }
+        #endregion //14MC edit end
+
         #region Throw
         /// <summary>
         ///     Calls Thrown on all components that implement the IThrown interface

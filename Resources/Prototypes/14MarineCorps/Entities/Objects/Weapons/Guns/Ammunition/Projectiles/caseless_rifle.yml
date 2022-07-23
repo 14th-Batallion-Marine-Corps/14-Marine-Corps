@@ -1,0 +1,10 @@
+- type: entity
+  id: Bullet10X24Caseless
+  name: bullet (10X24mm Caseless)
+  parent: BulletCaselessRifle
+  noSpawn: true
+  components:
+  - type: Projectile
+    damage:
+      types:
+        Piercing: 25

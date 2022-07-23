@@ -1,0 +1,42 @@
+- type: entity
+  id: BaseMagazine10X24Caseless
+  name: "magazine (10X24mm Caseless)"
+  parent: BaseItem
+  abstract: true
+  components:
+  - type: Tag
+    tags:
+      - Magazine10X24Caseless
+  - type: BallisticAmmoProvider
+    whitelist:
+      tags:
+        - Cartridge10X24Caseless
+    proto: Cartridge10X24Caseless
+    capacity: 50
+  - type: Item
+    size: 5
+  - type: ContainerContainer
+    containers:
+      ballistic-ammo: !type:Container
+  - type: Sprite
+    netsync: false
+    sprite: 14MarineCorps/Objects/Weapons/Guns/Ammunition/Magazine/t12.rsi
+    layers:
+    - state: base
+      map: ["enum.GunVisualLayers.Base"]
+    - state: mag-0
+      map: ["enum.GunVisualLayers.Mag"]
+  - type: MagazineVisuals
+    magState: mag
+    steps: 1
+    zeroVisible: false
+  - type: Appearance
+
+- type: entity
+  id: MagazineT-12
+  name: T-12 Magazine (10X24mm Caseless)
+  parent: BaseMagazine10X24Caseless
+  components:
+  - type: Tag
+    tags:
+      - MagazineT-12

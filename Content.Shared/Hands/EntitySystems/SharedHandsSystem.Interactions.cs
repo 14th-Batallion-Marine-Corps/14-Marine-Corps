@@ -25,6 +25,7 @@ public abstract partial class SharedHandsSystem : EntitySystem
             .Bind(ContentKeyFunctions.AltUseItemInHand, InputCmdHandler.FromDelegate(HandleAltUseInHand, handle: false))
             .Bind(ContentKeyFunctions.SwapHands, InputCmdHandler.FromDelegate(SwapHandsPressed, handle: false))
             .Bind(ContentKeyFunctions.Drop, new PointerInputCmdHandler(DropPressed))
+            .Bind(ContentKeyFunctions.UniqueAction, InputCmdHandler.FromDelegate(HandleUniqueActionItem, handle: false)) //14MC Edit
             .Register<SharedHandsSystem>();
     }
 
@@ -170,4 +171,20 @@ public abstract partial class SharedHandsSystem : EntitySystem
             args.PushText(Loc.GetString("comp-hands-examine", ("user", Identity.Entity(handsComp.Owner, EntityManager)), ("item", inhand)));
         }
     }
+    //14MC Edit - start
+    private void HandleUniqueActionItem(ICommonSession? session)
+    {
+        if (session?.AttachedEntity != null)
+            TryUniqueActionItemInHand(session.AttachedEntity.Value);
+    }
+    public bool TryUniqueActionItemInHand(EntityUid uid, SharedHandsComponent? handsComp = null)
+    {
+        if (!Resolve(uid, ref handsComp, false))
+            return false;
+        if (handsComp.ActiveHandEntity == null)
+            return false;
+
+        return _interactionSystem.UniqueActionInHandInteraction(uid, handsComp.ActiveHandEntity.Value);
+    }
+    //14MC Edit - end
 }

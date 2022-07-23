@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "license": "CC-BY-NC-4.0",
+  "copyright": "",
+  "size": {
+    "x": 64,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "base"
+    },
+    {
+      "name": "mag-0"
+    }
+  ]
+}

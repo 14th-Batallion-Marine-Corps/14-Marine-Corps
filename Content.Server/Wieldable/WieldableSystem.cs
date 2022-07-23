@@ -13,7 +13,8 @@ using Content.Shared.Verbs;
 using Robust.Shared.Audio;
 using Robust.Shared.Player;
 using Content.Server.Actions.Events;
-
+using Content.Shared.Weapons.Ranged.Events;
+using Content.Shared.Movement.Systems;
 
 namespace Content.Server.Wieldable
 {
@@ -23,6 +24,7 @@ namespace Content.Server.Wieldable
         [Dependency] private readonly HandVirtualItemSystem _virtualItemSystem = default!;
         [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
 
+        [Dependency] private readonly MovementSpeedModifierSystem _movementSpeed = default!; //14MC Edit
         public override void Initialize()
         {
             base.Initialize();
@@ -36,6 +38,11 @@ namespace Content.Server.Wieldable
             SubscribeLocalEvent<WieldableComponent, DisarmAttemptEvent>(OnDisarmAttemptEvent);
 
             SubscribeLocalEvent<IncreaseDamageOnWieldComponent, MeleeHitEvent>(OnMeleeHit);
+            //14MC edit start
+            SubscribeLocalEvent<ChangeGunStatsOnWieldComponent, GunStatsModifierEvent>(OnGunShoot);
+            SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, ItemWieldedEvent>(MovementSpeedOnWieldUnwield);
+            SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeedModifier);
+            //14MC edit end
         }
 
         private void OnDisarmAttemptEvent(EntityUid uid, WieldableComponent component, DisarmAttemptEvent args)
@@ -242,6 +249,33 @@ namespace Content.Server.Wieldable
 
             args.ModifiersList.Add(component.Modifiers);
         }
+        //14MC Edit - start
+        private void OnGunShoot(EntityUid uid, ChangeGunStatsOnWieldComponent component, ref GunStatsModifierEvent args)
+        {
+            if (EntityManager.TryGetComponent<WieldableComponent>(uid, out var wield))
+            {
+                if (!wield.Wielded)
+                    return;
+            }
+            args.AngleDecay += component.AngleDecay;
+            args.AngleIncrease += component.AngleIncrease;
+            args.MaxAngle += component.MaxAngle;
+            args.MinAngle += component.MinAngle;
+        }
+        private void MovementSpeedOnWieldUnwield(EntityUid uid, MovementSpeedModifierOnWieldComponent component, ItemWieldedEvent args)
+        {
+            _movementSpeed.RefreshMovementSpeedModifiers(uid);
+        }
+        private void OnRefreshMovementSpeedModifier(EntityUid uid, MovementSpeedModifierOnWieldComponent component, RefreshMovementSpeedModifiersEvent args)
+        {
+            if (EntityManager.TryGetComponent<WieldableComponent>(uid, out var wield))
+            {
+                if (!wield.Wielded)
+                    return;
+            }
+            args.ModifySpeed(component.WalkModifier, component.SprintModifier);
+        }
+        //14MC Edit - end
     }
 
     #region Events
