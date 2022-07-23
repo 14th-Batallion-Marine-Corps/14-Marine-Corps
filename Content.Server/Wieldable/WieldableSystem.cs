@@ -13,8 +13,7 @@ using Content.Shared.Verbs;
 using Robust.Shared.Audio;
 using Robust.Shared.Player;
 using Content.Server.Actions.Events;
-using Content.Server.Weapon.Ranged.Systems;
-using Content.Shared.Movement.Components;
+using Content.Shared.Weapons.Ranged.Events;
 using Content.Shared.Movement.Systems;
 
 namespace Content.Server.Wieldable
