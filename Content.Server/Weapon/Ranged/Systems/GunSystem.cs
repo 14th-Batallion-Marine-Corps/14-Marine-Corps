@@ -300,24 +300,3 @@ public sealed partial class GunSystem : SharedGunSystem
 
     #endregion
 }
-
-//14MC edit start
-[ByRefEvent]
-public struct GunStatsModifierEvent
-    {
-        public Angle MinAngle = Angle.Zero;
-        public Angle MaxAngle = Angle.Zero;
-
-        public Angle AngleIncrease = Angle.Zero;
-
-        public Angle AngleDecay = Angle.Zero;
-
-        public GunStatsModifierEvent(Angle minAngle, Angle maxAngle, Angle angleIncrease, Angle angleDecay){
-            MinAngle = minAngle;
-            MaxAngle = maxAngle;
-            AngleIncrease = angleIncrease;
-            AngleDecay = angleDecay;
-        }
-
-    }
-//14MC edit end
