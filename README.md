@@ -1,9 +1,4 @@
-<p align="center"> <img alt="Space Station 14" width="880" height="300" src="https://raw.githubusercontent.com/space-wizards/asset-dump/de329a7898bb716b9d5ba9a0cd07f38e61f1ed05/github-logo.svg" /></p>
-
-
-14Marine Corps is a branch of [Space Station 14](https://github.com/space-wizards/space-station-14) inspired by the Space Station 13 servers known as Colonial Marines and TerraGov MarineCorps.
-
-If you want to host or create content for 14MC, this is the repo you need. It contains both RobustToolbox and the content pack for development of new content packs.
+14Marine Corps is a branch/fork of [Space Station 14](https://github.com/space-wizards/space-station-14) inspired by the Space Station 13 branches known as Colonial Marines and TerraGov MarineCorps.
 
 ## Links
 
@@ -11,7 +6,7 @@ If you want to host or create content for 14MC, this is the repo you need. It co
 
 ## Documentation/Wiki
 
-if you intend on contrubting you should give a look at the [SS14 Documentation](https://docs.spacestation14.io/), it has documentation on SS14s content, engine, game design and more.
+if you intend on contributing you should give a look at the [SS14 Documentation](https://docs.spacestation14.io/), it has documentation on SS14s content, engine, game design and more.
 
 ## Contributing
 
