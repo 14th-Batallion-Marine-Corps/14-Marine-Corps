@@ -26,8 +26,10 @@ namespace Content.Client.Access.UI
 
         private string? _lastFullName;
         private string? _lastJobTitle;
+        private string? _lastJobProto;
 
-        public IdCardConsoleWindow(IdCardConsoleBoundUserInterface owner, IPrototypeManager prototypeManager, List<string> accessLevels)
+        public IdCardConsoleWindow(IdCardConsoleBoundUserInterface owner, IPrototypeManager prototypeManager,
+            List<string> accessLevels)
         {
             RobustXamlLoader.Load(this);
             IoCManager.InjectDependencies(this);
@@ -73,13 +75,21 @@ namespace Content.Client.Access.UI
 
                 var newButton = new Button
                 {
-                    Text = accessLevel.Name,
+                    Text = GetAccessLevelName(accessLevel),
                     ToggleMode = true,
                 };
                 AccessLevelGrid.AddChild(newButton);
                 _accessButtons.Add(accessLevel.ID, newButton);
                 newButton.OnPressed += _ => SubmitData();
             }
+        }
+
+        private static string GetAccessLevelName(AccessLevelPrototype prototype)
+        {
+            if (prototype.Name is { } name)
+                return Loc.GetString(name);
+
+            return prototype.ID;
         }
 
         private void ClearAllAccess()
@@ -101,6 +111,7 @@ namespace Content.Client.Access.UI
             }
 
             JobTitleLineEdit.Text = Loc.GetString(job.Name);
+            args.Button.SelectId(args.Id);
 
             ClearAllAccess();
 
@@ -181,17 +192,29 @@ namespace Content.Client.Access.UI
                 }
             }
 
+            var jobIndex = _jobPrototypeIds.IndexOf(state.TargetIdJobPrototype);
+            if (jobIndex >= 0)
+            {
+                JobPresetOptionButton.SelectId(jobIndex);
+            }
+
             _lastFullName = state.TargetIdFullName;
             _lastJobTitle = state.TargetIdJobTitle;
+            _lastJobProto = state.TargetIdJobPrototype;
         }
 
         private void SubmitData()
         {
+            // Don't send this if it isn't dirty.
+            var jobProtoDirty = _lastJobProto != null &&
+                                _jobPrototypeIds[JobPresetOptionButton.SelectedId] != _lastJobProto;
+
             _owner.SubmitData(
                 FullNameLineEdit.Text,
                 JobTitleLineEdit.Text,
                 // Iterate over the buttons dictionary, filter by `Pressed`, only get key from the key/value pair
-                _accessButtons.Where(x => x.Value.Pressed).Select(x => x.Key).ToList());
+                _accessButtons.Where(x => x.Value.Pressed).Select(x => x.Key).ToList(),
+                jobProtoDirty ? _jobPrototypeIds[JobPresetOptionButton.SelectedId] : string.Empty);
         }
     }
 }

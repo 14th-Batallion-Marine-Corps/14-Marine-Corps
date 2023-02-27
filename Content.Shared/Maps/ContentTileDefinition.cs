@@ -14,6 +14,7 @@ namespace Content.Shared.Maps
     public sealed class ContentTileDefinition : IPrototype, IInheritingPrototype, ITileDefinition
     {
         public const string SpaceID = "Space";
+        private string _name = string.Empty;
 
         [ParentDataFieldAttribute(typeof(AbstractPrototypeIdArraySerializer<ContentTileDefinition>))]
         public string[]? Parents { get; private set; }
@@ -22,19 +23,25 @@ namespace Content.Shared.Maps
         [AbstractDataFieldAttribute]
         public bool Abstract { get; private set; }
 
-        [IdDataFieldAttribute] public string ID { get; } = string.Empty;
+        [IdDataField] public string ID { get; } = string.Empty;
 
         public ushort TileId { get; private set; }
 
-        [DataField("name")] public string Name { get; } = string.Empty;
-
+        [DataField("name")]
+        public string Name { get; private set; } = "";
         [DataField("sprite")] public ResourcePath? Sprite { get; }
+
+        [DataField("cornerSprites")] public List<ResourcePath> CornerSprites { get; } = new();
+
+        [DataField("cardinalSprites")] public List<ResourcePath> CardinalSprites { get; } = new();
 
         [DataField("isSubfloor")] public bool IsSubFloor { get; private set; }
 
         [DataField("baseTurfs")] public List<string> BaseTurfs { get; } = new();
 
         [DataField("canCrowbar")] public bool CanCrowbar { get; private set; }
+
+        [DataField("canWirecutter")] public bool CanWirecutter { get; private set; }
 
         /// <summary>
         /// These play when the mob has shoes on.
@@ -65,6 +72,11 @@ namespace Content.Shared.Maps
 
         [DataField("isSpace")] public bool IsSpace { get; private set; }
         [DataField("sturdy")] public bool Sturdy { get; private set; } = true;
+
+        /// <summary>
+        /// Can weather affect this tile.
+        /// </summary>
+        [DataField("weather")] public bool Weather = false;
 
         public void AssignTileId(ushort id)
         {

@@ -12,6 +12,9 @@ public abstract partial class SharedGunSystem
 {
     private void OnExamine(EntityUid uid, GunComponent component, ExaminedEvent args)
     {
+        if (!args.IsInDetailsRange || !component.ShowExamineText)
+            return;
+
         args.PushMarkup(Loc.GetString("gun-selected-mode-examine", ("color", ModeExamineColor), ("mode", GetLocSelector(component.SelectedMode))));
         args.PushMarkup(Loc.GetString("gun-fire-rate-examine", ("color", FireRateExamineColor), ("fireRate", component.FireRate)));
     }
@@ -32,7 +35,7 @@ public abstract partial class SharedGunSystem
         {
             Act = () => SelectFire(component, nextMode, args.User),
             Text = Loc.GetString("gun-selector-verb", ("mode", GetLocSelector(nextMode))),
-            IconTexture = "/Textures/Interface/VerbIcons/fold.svg.192dpi.png",
+            Icon = new SpriteSpecifier.Texture(new ResourcePath("/Textures/Interface/VerbIcons/fold.svg.192dpi.png")),
         };
 
         args.Verbs.Add(verb);
@@ -66,7 +69,7 @@ public abstract partial class SharedGunSystem
         else
             component.NextFire += cooldown;
 
-        PlaySound(component.Owner, component.SoundModeToggle?.GetSound(Random, ProtoManager), user);
+        Audio.PlayPredicted(component.SoundModeToggle, component.Owner, user);
         Popup(Loc.GetString("gun-selected-mode", ("mode", GetLocSelector(fire))), component.Owner, user);
         Dirty(component);
     }
@@ -84,14 +87,10 @@ public abstract partial class SharedGunSystem
         SelectFire(component, nextMode, user);
     }
 
+    // TODO: Actions need doing for guns anyway.
     private sealed class CycleModeEvent : InstantActionEvent
     {
         public SelectiveFire Mode;
-
-        public CycleModeEvent(SelectiveFire mode)
-        {
-            Mode = mode;
-        }
     }
 
     private void OnCycleMode(EntityUid uid, GunComponent component, CycleModeEvent args)

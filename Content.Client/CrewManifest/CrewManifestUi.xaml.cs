@@ -24,8 +24,6 @@ public sealed partial class CrewManifestUi : DefaultWindow
 
     private readonly CrewManifestSystem _crewManifestSystem;
 
-    private EntityUid? _station;
-
     public CrewManifestUi()
     {
         RobustXamlLoader.Load(this);
@@ -106,18 +104,13 @@ public sealed partial class CrewManifestUi : DefaultWindow
             Orientation = LayoutOrientation.Vertical;
             HorizontalExpand = true;
 
+            if (Loc.TryGetString($"department-{sectionTitle}", out var localizedDepart))
+                sectionTitle = localizedDepart;
+
             AddChild(new Label()
             {
                 StyleClasses = { "LabelBig" },
                 Text = Loc.GetString(sectionTitle)
-            });
-
-            entries.Sort((a, b) =>
-            {
-                var posA = crewManifestSystem.GetDepartmentOrder(sectionTitle, a.JobPrototype);
-                var posB = crewManifestSystem.GetDepartmentOrder(sectionTitle, b.JobPrototype);
-
-                return posA.CompareTo(posB);
             });
 
             var gridContainer = new GridContainer()
@@ -133,11 +126,11 @@ public sealed partial class CrewManifestUi : DefaultWindow
 
             foreach (var entry in entries)
             {
-                var name = new Label()
+                var name = new RichTextLabel()
                 {
                     HorizontalExpand = true,
-                    Text = entry.Name
                 };
+                name.SetMessage(entry.Name);
 
                 var titleContainer = new BoxContainer()
                 {
@@ -145,10 +138,8 @@ public sealed partial class CrewManifestUi : DefaultWindow
                     HorizontalExpand = true
                 };
 
-                var title = new Label()
-                {
-                    Text = Loc.GetString(entry.JobTitle)
-                };
+                var title = new RichTextLabel();
+                title.SetMessage(entry.JobTitle);
 
 
                 if (rsi != null)
