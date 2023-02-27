@@ -1,26 +1,29 @@
-using System.Threading;
-using Content.Shared.Disease;
-using Content.Shared.Disease.Components;
-using Content.Server.Disease.Components;
-using Content.Server.Clothing.Components;
 using Content.Server.Body.Systems;
 using Content.Server.Chat.Systems;
-using Content.Shared.MobState.Components;
-using Content.Shared.Examine;
-using Content.Shared.Inventory;
-using Content.Shared.Interaction;
-using Content.Server.Popups;
+using Content.Server.Disease.Components;
 using Content.Server.DoAfter;
-using Robust.Shared.Player;
+using Content.Server.Nutrition.EntitySystems;
+using Content.Server.Popups;
+using Content.Shared.Clothing.Components;
+using Content.Shared.Disease;
+using Content.Shared.Disease.Components;
+using Content.Shared.Disease.Events;
+using Content.Shared.DoAfter;
+using Content.Shared.Examine;
+using Content.Shared.IdentityManagement;
+using Content.Shared.Interaction;
+using Content.Shared.Interaction.Events;
+using Content.Shared.Inventory;
+using Content.Shared.Inventory.Events;
+using Content.Shared.Mobs.Components;
+using Content.Shared.Mobs.Systems;
+using Content.Shared.Rejuvenate;
+using Robust.Shared.Audio;
+using Robust.Server.GameObjects;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Serialization.Manager;
-using Content.Shared.Inventory.Events;
-using Content.Server.Nutrition.EntitySystems;
 using Robust.Shared.Utility;
-using Content.Shared.IdentityManagement;
-using Content.Shared.Item;
-using Content.Server.MobState;
 
 namespace Content.Server.Disease
 {
@@ -30,6 +33,7 @@ namespace Content.Server.Disease
     /// </summary>
     public sealed class DiseaseSystem : EntitySystem
     {
+        [Dependency] private readonly AudioSystem _audioSystem = default!;
         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
         [Dependency] private readonly ISerializationManager _serializationManager = default!;
         [Dependency] private readonly IRobustRandom _random = default!;
@@ -44,8 +48,8 @@ namespace Content.Server.Disease
             base.Initialize();
             SubscribeLocalEvent<DiseaseCarrierComponent, ComponentInit>(OnInit);
             SubscribeLocalEvent<DiseaseCarrierComponent, CureDiseaseAttemptEvent>(OnTryCureDisease);
-            SubscribeLocalEvent<DiseasedComponent, UserInteractedWithItemEvent>(OnUserInteractDiseased);
-            SubscribeLocalEvent<DiseasedComponent, ItemInteractedWithEvent>(OnTargetInteractDiseased);
+            SubscribeLocalEvent<DiseaseCarrierComponent, RejuvenateEvent>(OnRejuvenate);
+            SubscribeLocalEvent<DiseasedComponent, ContactInteractionEvent>(OnContactInteraction);
             SubscribeLocalEvent<DiseasedComponent, EntitySpokeEvent>(OnEntitySpeak);
             SubscribeLocalEvent<DiseaseProtectionComponent, GotEquippedEvent>(OnEquipped);
             SubscribeLocalEvent<DiseaseProtectionComponent, GotUnequippedEvent>(OnUnequipped);
@@ -54,8 +58,7 @@ namespace Content.Server.Disease
             // Handling stuff from other systems
             SubscribeLocalEvent<DiseaseCarrierComponent, ApplyMetabolicMultiplierEvent>(OnApplyMetabolicMultiplier);
             // Private events stuff
-            SubscribeLocalEvent<TargetVaxxSuccessfulEvent>(OnTargetVaxxSuccessful);
-            SubscribeLocalEvent<VaxxCancelledEvent>(OnVaxxCancelled);
+            SubscribeLocalEvent<DiseaseVaccineComponent, DoAfterEvent>(OnDoAfter);
         }
 
         private Queue<EntityUid> AddQueue = new();
@@ -188,6 +191,11 @@ namespace Content.Server.Disease
             }
         }
 
+        private void OnRejuvenate(EntityUid uid, DiseaseCarrierComponent component, RejuvenateEvent args)
+        {
+            CureAllDiseases(uid, component);
+        }
+
         /// <summary>
         /// Called when a component with disease protection
         /// is equipped so it can be added to the person's
@@ -232,7 +240,7 @@ namespace Content.Server.Disease
         {
             var CureTuple = (carrier, disease);
             CureQueue.Enqueue(CureTuple);
-            _popupSystem.PopupEntity(Loc.GetString("disease-cured"), carrier.Owner, Filter.Entities(carrier.Owner));
+            _popupSystem.PopupEntity(Loc.GetString("disease-cured"), carrier.Owner, carrier.Owner);
         }
 
         public void CureAllDiseases(EntityUid uid, DiseaseCarrierComponent? carrier = null)
@@ -249,24 +257,16 @@ namespace Content.Server.Disease
         /// <summary>
         /// When a diseased person interacts with something, check infection.
         /// </summary>
-        private void OnUserInteractDiseased(EntityUid uid, DiseasedComponent component, UserInteractedWithItemEvent args)
+        private void OnContactInteraction(EntityUid uid, DiseasedComponent component, ContactInteractionEvent args)
         {
-            InteractWithDiseased(args.User, args.Item);
-        }
-
-        /// <summary>
-        /// When a diseased person is interacted with, check infection.
-        /// </summary>
-        private void OnTargetInteractDiseased(EntityUid uid, DiseasedComponent component, ItemInteractedWithEvent args)
-        {
-            InteractWithDiseased(args.Item, args.User);
+            InteractWithDiseased(uid, args.Other);
         }
 
         private void OnEntitySpeak(EntityUid uid, DiseasedComponent component, EntitySpokeEvent args)
         {
             if (TryComp<DiseaseCarrierComponent>(uid, out var carrier))
             {
-                SneezeCough(uid, _random.Pick(carrier.Diseases), string.Empty);
+                SneezeCough(uid, _random.Pick(carrier.Diseases), string.Empty, null);
             }
         }
 
@@ -276,35 +276,17 @@ namespace Content.Server.Disease
         /// </summary>
         private void OnAfterInteract(EntityUid uid, DiseaseVaccineComponent vaxx, AfterInteractEvent args)
         {
-            if (vaxx.CancelToken != null)
-            {
-                vaxx.CancelToken.Cancel();
-                vaxx.CancelToken = null;
-                return;
-            }
-            if (args.Target == null)
-                return;
-
-            if (!args.CanReach)
-                return;
-
-            if (vaxx.CancelToken != null)
-                return;
-
-            if (!TryComp<DiseaseCarrierComponent>(args.Target, out var carrier))
+            if (args.Target == null || !args.CanReach)
                 return;
 
             if (vaxx.Used)
             {
-                _popupSystem.PopupEntity(Loc.GetString("vaxx-already-used"), args.User, Filter.Entities(args.User));
+                _popupSystem.PopupEntity(Loc.GetString("vaxx-already-used"), args.User, args.User);
                 return;
             }
 
-            vaxx.CancelToken = new CancellationTokenSource();
-            _doAfterSystem.DoAfter(new DoAfterEventArgs(args.User, vaxx.InjectDelay, vaxx.CancelToken.Token, target: args.Target)
+            _doAfterSystem.DoAfter(new DoAfterEventArgs(args.User, vaxx.InjectDelay, target: args.Target, used:uid)
             {
-                BroadcastFinishedEvent = new TargetVaxxSuccessfulEvent(args.User, args.Target, vaxx, carrier),
-                BroadcastCancelledEvent = new VaxxCancelledEvent(vaxx),
                 BreakOnTargetMove = true,
                 BreakOnUserMove = true,
                 BreakOnStun = true,
@@ -348,7 +330,6 @@ namespace Content.Server.Disease
         }
     }
 
-
         ///
         /// Helper functions
         ///
@@ -386,7 +367,7 @@ namespace Content.Server.Disease
                     return;
             }
 
-            var freshDisease = _serializationManager.Copy(addedDisease);
+            var freshDisease = _serializationManager.CreateCopy(addedDisease, notNullableOverride: true);
 
             if (freshDisease == null) return;
 
@@ -432,24 +413,34 @@ namespace Content.Server.Disease
         }
 
         /// <summary>
-        /// Plays a sneeze/cough popup if applicable
+        /// Raises an event for systems to cancel the snough if needed
+        /// Plays a sneeze/cough sound and popup if applicable
         /// and then tries to infect anyone in range
         /// if the snougher is not wearing a mask.
         /// </summary>
-        public void SneezeCough(EntityUid uid, DiseasePrototype? disease, string snoughMessage, bool airTransmit = true, TransformComponent? xform = null)
+        public bool SneezeCough(EntityUid uid, DiseasePrototype? disease, string snoughMessage, SoundSpecifier? snoughSound, bool airTransmit = true, TransformComponent? xform = null)
         {
-            if (!Resolve(uid, ref xform)) return;
+            if (!Resolve(uid, ref xform)) return false;
+
+            if (_mobStateSystem.IsDead(uid)) return false;
+
+            var attemptSneezeCoughEvent = new AttemptSneezeCoughEvent(uid, snoughMessage, snoughSound);
+            RaiseLocalEvent(uid, ref attemptSneezeCoughEvent);
+            if (attemptSneezeCoughEvent.Cancelled) return false;
 
             if (!string.IsNullOrEmpty(snoughMessage))
-                _popupSystem.PopupEntity(Loc.GetString(snoughMessage, ("person", Identity.Entity(uid, EntityManager))), uid, Filter.Pvs(uid));
+                _popupSystem.PopupEntity(Loc.GetString(snoughMessage, ("person", Identity.Entity(uid, EntityManager))), uid);
+
+            if (snoughSound != null)
+                _audioSystem.PlayPvs(snoughSound, uid);
 
             if (disease is not { Infectious: true } || !airTransmit)
-                return;
+                return true;
 
             if (_inventorySystem.TryGetSlotEntity(uid, "mask", out var maskUid) &&
                 EntityManager.TryGetComponent<IngestionBlockerComponent>(maskUid, out var blocker) &&
                 blocker.Enabled)
-                return;
+                return true;
 
             var carrierQuery = GetEntityQuery<DiseaseCarrierComponent>();
 
@@ -460,6 +451,7 @@ namespace Content.Server.Disease
 
                 TryInfect(carrier, disease, 0.3f);
             }
+            return true;
         }
 
         /// <summary>
@@ -477,60 +469,23 @@ namespace Content.Server.Disease
             carrier.PastDiseases.Add(disease);
         }
 
-        ///
-        /// Private Events Stuff
-        ///
-
-        /// <summary>
-        /// Injects the vaccine into the target
-        /// if the doafter is completed
-        /// </summary>
-        private void OnTargetVaxxSuccessful(TargetVaxxSuccessfulEvent args)
+        private void OnDoAfter(EntityUid uid, DiseaseVaccineComponent component, DoAfterEvent args)
         {
-            if (args.Vaxx.Disease == null)
+            if (args.Handled || args.Cancelled || !TryComp<DiseaseCarrierComponent>(args.Args.Target, out var carrier) || component.Disease == null)
                 return;
-            Vaccinate(args.Carrier, args.Vaxx.Disease);
-            EntityManager.DeleteEntity(args.Vaxx.Owner);
-        }
 
-        /// <summary>
-        /// Cancels the vaccine doafter
-        /// </summary>
-        private static void OnVaxxCancelled(VaxxCancelledEvent args)
-        {
-            args.Vaxx.CancelToken = null;
-        }
-        /// These two are standard doafter stuff you can ignore
-        private sealed class VaxxCancelledEvent : EntityEventArgs
-        {
-            public readonly DiseaseVaccineComponent Vaxx;
-            public VaxxCancelledEvent(DiseaseVaccineComponent vaxx)
-            {
-                Vaxx = vaxx;
-            }
-        }
-        private sealed class TargetVaxxSuccessfulEvent : EntityEventArgs
-        {
-            public EntityUid User { get; }
-            public EntityUid? Target { get; }
-            public DiseaseVaccineComponent Vaxx { get; }
-            public DiseaseCarrierComponent Carrier { get; }
-            public TargetVaxxSuccessfulEvent(EntityUid user, EntityUid? target, DiseaseVaccineComponent vaxx, DiseaseCarrierComponent carrier)
-            {
-                User = user;
-                Target = target;
-                Vaxx = vaxx;
-                Carrier = carrier;
-            }
+            Vaccinate(carrier, component.Disease);
+            EntityManager.DeleteEntity(uid);
+            args.Handled = true;
         }
     }
 
-        /// <summary>
-        /// This event is fired by chems
-        /// and other brute-force rather than
-        /// specific cures. It will roll the dice to attempt
-        /// to cure each disease on the target
-        /// </summary>
+    /// <summary>
+    /// This event is fired by chems
+    /// and other brute-force rather than
+    /// specific cures. It will roll the dice to attempt
+    /// to cure each disease on the target
+    /// </summary>
     public sealed class CureDiseaseAttemptEvent : EntityEventArgs
     {
         public float CureChance { get; }
