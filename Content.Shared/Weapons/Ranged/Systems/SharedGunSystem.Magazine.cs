@@ -31,6 +31,7 @@ public abstract partial class SharedGunSystem
     }
 
     private void OnMagazineUse(EntityUid uid, MagazineAmmoProviderComponent component, UniqueActionInHandEvent args) //14MC Edit - UniqueActionInHandEvent
+    {
         var magEnt = GetMagazineEntity(uid);
 
         if (magEnt == null) return;

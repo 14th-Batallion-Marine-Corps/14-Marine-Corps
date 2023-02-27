@@ -13,6 +13,7 @@ using Robust.Shared.Player;
 using Content.Server.Actions.Events;
 using Content.Shared.Weapons.Ranged.Events;
 using Content.Shared.Weapons.Melee.Events;
+using Content.Shared.DoAfter;
 using Content.Shared.Movement.Systems;
 
 namespace Content.Server.Wieldable
@@ -42,7 +43,7 @@ namespace Content.Server.Wieldable
             SubscribeLocalEvent<IncreaseDamageOnWieldComponent, MeleeHitEvent>(OnMeleeHit);
             //14MC edit start
             SubscribeLocalEvent<ChangeGunStatsOnWieldComponent, GunStatsModifierEvent>(OnGunShoot);
-            SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, ItemWieldedEvent>(MovementSpeedOnWieldUnwield);
+            SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, DoAfterEvent>(MovementSpeedOnWieldUnwield);
             SubscribeLocalEvent<MovementSpeedModifierOnWieldComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeedModifier);
             //14MC edit end
         }
@@ -252,7 +253,7 @@ namespace Content.Server.Wieldable
             args.MaxAngle += component.MaxAngle;
             args.MinAngle += component.MinAngle;
         }
-        private void MovementSpeedOnWieldUnwield(EntityUid uid, MovementSpeedModifierOnWieldComponent component, ItemWieldedEvent args)
+        private void MovementSpeedOnWieldUnwield(EntityUid uid, MovementSpeedModifierOnWieldComponent component, DoAfterEvent args)
         {
             _movementSpeed.RefreshMovementSpeedModifiers(uid);
         }
